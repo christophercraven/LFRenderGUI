@@ -136,7 +136,7 @@ except:
     BFREAD_OK = 0
 
 # ID used for path settings file
-LFE_ID = 88
+LFE_ID = 249.0
 
 
 ####################################################################
@@ -148,6 +148,8 @@ LFE_paths_filename  =   ".LFE_paths"
 LFE_scene_filename  =   ".LFE_scene"
 LFE_scene_filepath  =   ""
 Tpath       = Draw.Create("")
+LFpath      = Draw.Create("")
+TMPpath     = Draw.Create("")
 Tsave_path  = Draw.Create(0)
 # (path+) Editor name
 Teditpath   = Draw.Create("")
@@ -7055,7 +7057,7 @@ def rd_bevent(evt):
 ##################################################
 
 def pt_draw():
-    global Tpath, Tsave_path, Teditpath, Tmsp_path, Ttex_dir, Tpy_execpath
+    global Tpath,LFpath,TMPpath, Tsave_path, Teditpath, Tmsp_path, Ttex_dir, Tpy_execpath
     global Tbrowser
 
     BGL.glClearColor(1, 1, 1, 1)
@@ -7073,14 +7075,18 @@ def pt_draw():
     Draw.Text("Please type in the full path to your prefered export directory")
 
     # the path string input
-    Tpath = Draw.String("Path: ", evt_ignore, Lstart, 465*muly, 375*mulx, 18*muly, Tpath.val, 128,
+    Tpath = Draw.String("Path: ", evt_ignore, Lstart, 470*muly, 375*mulx, 18*muly, Tpath.val, 128,
                         "The full path to the LFexport directory")
+    LFpath = Draw.String("Path: ", evt_ignore, Lstart, 450*muly, 375*mulx, 18*muly, LFpath.val, 128,
+                        "The full path to the LIGHTFLOWPATH directory")
+    TMPpath = Draw.String("Path: ", evt_ignore, Lstart, 430*muly, 375*mulx, 18*muly, TMPpath.val, 128,
+                        "The full path to the LIGHTFLOWTEMP directory")
 
     # optional python path for rendering from blender
     # only needed for windows
     BGL.glRasterPos2i(Lstart, 425*muly)
     if sys.platform=='win32':
-        Draw.Text("You are using Windows.")
+        #Draw.Text("You are using Windows.")
         BGL.glRasterPos2i(Lstart, 400*muly)
         Draw.Text('The script uses the current running python version to be able to render.')
         BGL.glRasterPos2i(Lstart, 385*muly)
@@ -7091,7 +7097,7 @@ def pt_draw():
         BGL.glRasterPos2i(Lstart, 345*muly)
         Draw.Text('If this is not correct, please specify the correct name.')
     elif sys.platform.find('linux')!=-1:
-        Draw.Text("This OS is Linux")
+        #Draw.Text("This OS is Linux")
         BGL.glRasterPos2i(Lstart, 400*muly)
         Draw.Text('For documentation: What browser do you prefer to use?')
         BGL.glRasterPos2i(Lstart, 385*muly)
@@ -7855,12 +7861,18 @@ def START_PATH_GUI():
     if sys.platform=='win32':
         # try using drive name where windows is located
         dr = os.path.splitdrive(os.environ['WINDIR'])
-        Tpath = Draw.Create(dr[0] + "\LFexport")
+        LFpath  = Draw.Create(dr[0] + "\Lightflow")
+        TMPpath = Draw.Create(dr[0] + "\Lightflow\LFtemp")
+        Tpath   = Draw.Create(dr[0] + "\LFexport")
         Teditpath = Draw.Create('Notepad')
         # MATSpider directory
         Tmsp_path = Draw.Create(dr[0] + "\PROGRA~1\MATSpiderLF")
     else:
-        Tpath = Draw.Create(os.path.join(os.environ['HOME'], 'LFexport'))
+        #dr = os.path.join(os.environ['HOME']
+        dr = os.environ['HOME']
+        LFpath  = Draw.Create(dr+ 'Lightflow')
+        TMPpath = Draw.Create(dr+ 'Lightflow/LFtemp')
+        Tpath   = Draw.Create(dr+ 'LFexport')
         Teditpath = Draw.Create('emacs')
     PREF_CANCEL = 0
     Draw.Register(pt_draw, main_event, pt_bevent)
@@ -7917,14 +7929,15 @@ def START():
     # but on the other hand, os probably isn't imported anyway when it is not available, but still...
     try:
         os.environ['PYTHONPATH']
-        #os.environ
+        
     except:
         # of course can create the long string with C style separation, but looks ugly without the sudden lack
         # of the otherwise required indentation in the python code here
-        st = "\nNo PYTHONPATH, you did not set this environment variable.\nThis scipt really needs it...\n"
-        st += "So try again after you properly set this.\nFor a how-to see the GeneralInfo.html page."
-        print "\nNo PYTHONPATH."
+        #st = "\nNo PYTHONPATH, you did not set this environment variable.\nThis scipt really needs it...\n"
+        #st += "So try again after you properly set this.\nFor a how-to see the GeneralInfo.html page."
         #raise Exception(st)
+        print "\nNo PYTHONPATH."
+
 
     # create full path name to settings file
     sfilepath = os.path.join(sfilepath, LFE_paths_filename)
@@ -7951,6 +7964,8 @@ def START():
                 raise ValueError
             # Main export path
             Tpath = Draw.Create(paths[1])
+            LFpath = Draw.Create(paths[7])
+            TMPpath = Draw.Create(paths[8])
             LFXPORT = paths[1]
             # Editor name
             Teditpath = Draw.Create(paths[2])

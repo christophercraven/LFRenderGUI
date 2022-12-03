@@ -204,9 +204,9 @@ evt_testbrowser =   36
 ######################################################
 # GLOBALS                                            #
 ######################################################
-
-LFXPORT = "" # THE MOST IMPORTANT VARIABLE
-LFHOME = 'C:\\progs\\lightflow'
+LFHOME = "/lightflow"
+LFTEMP = LFHOME+"/LFtemp"
+LFXPORT = LFHOME+"/LFexport" # THE MOST IMPORTANT VARIABLE
 outname = ""
 outdir = ""
 file = None
@@ -215,7 +215,7 @@ matfile = None
 pyname = ""
 pyfilepath = ""
 #pypth = os.environ['PYTHONPATH']
-pypth = 'C:\\programdata\\miniconda2'
+pypth = '/python'
 frame_outname = ""
 texnames = {}
 matnames = []
@@ -7198,11 +7198,12 @@ def pt_bevent(evt):
             else:
                 print "%s directory created" % LFXPORT
         else:
-            print "%s already exists" % LFXPORT
+            print "Ready: %s" % LFXPORT
 
         if PATH_OK[0]:
             # SAVE THE PATH SETTINGS IN THE LIGHTFLOW DIRECTORY
             pfilename = os.path.join(LFHOME, LFE_paths_filename)
+            print "Saving paths to",pfilename
             try:
                 # catch filewrite errors
                 fh = open(pfilename, 'wb')
@@ -7222,8 +7223,9 @@ def pt_bevent(evt):
                 if sys.platform!='win32':
                     fh.write(str(Tbrowser.val)+'\n')
                 fh.close()
-            except IOError:
+            except IOError as st:
                 PATH_OK = [0, "Error writing pathfile!"]
+                print st
                 try:    # fh might not be open
                     if not fh.closed: fh.close()
                 except:
@@ -7824,7 +7826,7 @@ def WalkFind(root, recurse=0, pattern=''):
 
 
 def START_PATH_GUI():
-    global Tpath, Teditpath, Tmsp_path, PREF_CANCEL, Tpy_execpath
+    global Tpath,LFpath,TMPpath, Teditpath, Tmsp_path, PREF_CANCEL, Tpy_execpath
     # Create a preset editor name based on platform, windows users probably will use notepad anyway
     # For windows also create preset pathname for MATSpiderLF
     # For both create LFexport preset name
@@ -7922,8 +7924,8 @@ def START():
         #sfilepath = LFHOME
     except:
         #raise Exception("\nNo LIGHTFLOWPATH, it seems you did not install Lightflow properly, goodbye...")
-        print "\nNo LIGHTFLOWPATH. Will try to configure."
-        sfilepath = LFHOME
+        print "\nNo settings path. Will try to configure."
+        sfilepath = Blender.Get('datadir')
 
     # now do the same for PYTHONPATH, also must be available
     # but on the other hand, os probably isn't imported anyway when it is not available, but still...

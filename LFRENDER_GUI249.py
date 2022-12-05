@@ -6640,7 +6640,9 @@ def rd_event(evt, val):
             """ 
 
 def StartLightflow(wait=0):
-    global LFPID
+    global LFPID,LFHOME,LFTEMP
+    os.environ["LIGHTFLOWPATH"] = LFHOME
+    os.environ["LIGHTFLOWTEMP"] = LFTEMP
     # Start Lightflow with the last saved .py file
     LFPID = None
     if wait:

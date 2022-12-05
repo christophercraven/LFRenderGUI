@@ -5323,7 +5323,7 @@ def main_draw():
 
     # get the window coordinate multiply factors
     midx, mulx, muly = GetWindowFactors()
-
+    midx = int((393*mulx)/2)
     # clear screen
     BGL.glClearColor(0.25, 0.5, 0.5, 1)
     BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
@@ -5332,7 +5332,7 @@ def main_draw():
     BGL.glColor3f(0, 0, 0)
     BGL.glRecti(0, 480*muly, 393*mulx, 510*muly)
 
-    Title = "LIGHTFLOW EXPORT"
+    Title = "LIGHTFLOW EXPORT" +" "+LFE_ID
     BGL.glColor3f(0.42, 0.378, 0.387)
     BGL.glRasterPos2i(midx - len(Title)*3.5, 490*muly)
     Draw.Text(Title)

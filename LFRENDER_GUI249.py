@@ -20,7 +20,7 @@ if BL_VERSION<=223:
 # Enable(1) or Disable(0) full trace print for debugging, as with normal python use
 # also used as flag to print mesh info
 # since this is not accesible for anyone else but me, traceback is only imported here when PRINT_TRACE is set, not in START() anymore
-PRINT_TRACE = 0
+PRINT_TRACE = 1
 if PRINT_TRACE: import traceback
 
 # import all need modules
@@ -136,7 +136,7 @@ except:
     BFREAD_OK = 0
 
 # ID used for path settings file
-LFE_ID = 249.0
+LFE_ID = "249.0"
 
 
 ####################################################################
@@ -148,7 +148,7 @@ LFE_paths_filename  =   ".LFE_paths"
 LFE_scene_filename  =   ".LFE_scene"
 LFE_scene_filepath  =   ""
 Tpath       = Draw.Create("")
-LFpath      = Draw.Create("")
+TLFpath     = Draw.Create("")
 TMPpath     = Draw.Create("")
 Tsave_path  = Draw.Create(0)
 # (path+) Editor name
@@ -204,9 +204,11 @@ evt_testbrowser =   36
 ######################################################
 # GLOBALS                                            #
 ######################################################
-LFHOME = "/lightflow"
-LFTEMP = LFHOME+"/LFtemp"
-LFXPORT = LFHOME+"/LFexport" # THE MOST IMPORTANT VARIABLE
+sl = os.sep
+sfilepath = ""
+LFHOME = sl+"lightflow"
+LFTEMP = LFHOME+sl+"LFtemp"
+LFXPORT = LFHOME+sl+"LFexport" # THE MOST IMPORTANT VARIABLE
 outname = ""
 outdir = ""
 file = None
@@ -214,8 +216,8 @@ meshfile = None
 matfile = None
 pyname = ""
 pyfilepath = ""
-#pypth = os.environ['PYTHONPATH']
-pypth = '/python'
+#PYPATH = os.environ['PYTHONPATH']
+PYPATH = ""
 frame_outname = ""
 texnames = {}
 matnames = []
@@ -7057,7 +7059,7 @@ def rd_bevent(evt):
 ##################################################
 
 def pt_draw():
-    global Tpath,LFpath,TMPpath, Tsave_path, Teditpath, Tmsp_path, Ttex_dir, Tpy_execpath
+    global Tpath,TLFpath,TMPpath, Tsave_path, Teditpath, Tmsp_path, Ttex_dir, Tpy_execpath
     global Tbrowser
 
     BGL.glClearColor(1, 1, 1, 1)
@@ -7075,11 +7077,11 @@ def pt_draw():
     Draw.Text("Please type in the full path to your prefered export directory")
 
     # the path string input
-    Tpath = Draw.String("Path: ", evt_ignore, Lstart, 470*muly, 375*mulx, 18*muly, Tpath.val, 128,
+    Tpath = Draw.String("LFExport: ", evt_ignore, Lstart, 470*muly, 375*mulx, 18*muly, Tpath.val, 128,
                         "The full path to the LFexport directory")
-    LFpath = Draw.String("Path: ", evt_ignore, Lstart, 450*muly, 375*mulx, 18*muly, LFpath.val, 128,
+    TLFpath = Draw.String("LF path: ", evt_ignore, Lstart, 450*muly, 375*mulx, 18*muly, TLFpath.val, 128,
                         "The full path to the LIGHTFLOWPATH directory")
-    TMPpath = Draw.String("Path: ", evt_ignore, Lstart, 430*muly, 375*mulx, 18*muly, TMPpath.val, 128,
+    TMPpath = Draw.String("LFtemp path: ", evt_ignore, Lstart, 430*muly, 375*mulx, 18*muly, TMPpath.val, 128,
                         "The full path to the LIGHTFLOWTEMP directory")
 
     # optional python path for rendering from blender
@@ -7161,11 +7163,19 @@ def pt_bevent(evt):
     if evt == evt_save:
         # test and create root output directory
         LFXPORT = Tpath.val
+        LFHOME  = TLFpath.val
+        LFTEMP  = TMPpath.val
 
         # TEST THAT THE SPECIFIED PYTHON.EXE IS CORRECT
         if not os.path.exists(Tpy_execpath.val):
             # not correct
-            PATH_OK = [0, "The specified python.exe location does not exist !!!"]
+            PATH_OK = [0, "The specified Python location does not exist !!!"]
+            Blender.Redraw()
+            return
+            
+        if not os.path.exists(TLFpath.val):
+            # not correct
+            PATH_OK = [0, "The specified Lightflow path does not exist !!!"]
             Blender.Redraw()
             return
 
@@ -7202,7 +7212,7 @@ def pt_bevent(evt):
 
         if PATH_OK[0]:
             # SAVE THE PATH SETTINGS IN THE LIGHTFLOW DIRECTORY
-            pfilename = os.path.join(LFHOME, LFE_paths_filename)
+            pfilename = os.path.join(sfilepath, LFE_paths_filename)
             print "Saving paths to",pfilename
             try:
                 # catch filewrite errors
@@ -7211,6 +7221,10 @@ def pt_bevent(evt):
                 fh.write(str(LFE_ID)+'\n')
                 # Main Lightflow export directory
                 fh.write(LFXPORT + '\n')
+                # LIGHTFLOWPATH
+                fh.write(LFHOME + '\n')
+                # LIGHTFLOWTEMP
+                fh.write(LFTEMP + '\n')
                 # Editor name only
                 fh.write(Teditpath.val+'\n')
                 # MATSpider directory name
@@ -7231,6 +7245,7 @@ def pt_bevent(evt):
                 except:
                     pass
             else:
+                PATH_OK = [1, "Saved pathfile."]
                 # The LFE_scene_filepath variable was missing here, which caused
                 # an error when exporting for the first time after path definitions
                 GetOutdir()
@@ -7826,7 +7841,7 @@ def WalkFind(root, recurse=0, pattern=''):
 
 
 def START_PATH_GUI():
-    global Tpath,LFpath,TMPpath, Teditpath, Tmsp_path, PREF_CANCEL, Tpy_execpath
+    global sfilepath,Tpath,TLFpath,TMPpath, Teditpath, Tmsp_path, PREF_CANCEL, Tpy_execpath
     # Create a preset editor name based on platform, windows users probably will use notepad anyway
     # For windows also create preset pathname for MATSpiderLF
     # For both create LFexport preset name
@@ -7834,8 +7849,10 @@ def START_PATH_GUI():
     # construct the path to the python executable using the main python directory name in PYTHONPATH
     if sys.platform=='win32':
         # different method, like install script using python lib directory
-        #pt = os.environ['PYTHONPATH'].split(os.pathsep)
-        pt = pypth.split(os.pathsep)
+        # ;=os.pathsep 
+        # pt = os.environ['PYTHONPATH'].split(os.pathsep)
+        print 'PYPATH',PYPATH
+        pt = PYPATH.split(os.pathsep)
         py_exedir = None
         for p in pt:
             ok = p.lower().find('lib')
@@ -7847,7 +7864,7 @@ def START_PATH_GUI():
         else:
             # not found(???), use old method, user has to specify it...
             #Tpy_execpath = Draw.Create(os.path.join(os.path.commonprefix(os.environ['PYTHONPATH'].split(os.pathsep)), 'python.exe'))
-            Tpy_execpath = Draw.Create(os.path.join(os.path.commonprefix(pypth.split(os.pathsep)), 'python.exe'))
+            Tpy_execpath = Draw.Create(os.path.join(os.path.commonprefix(pt), 'python.exe'))
     else:
         # method above can't be used in Linux, assume /usr/bin/python or /usr/local/bin/python
         tpy = "/usr/bin/python"
@@ -7863,16 +7880,18 @@ def START_PATH_GUI():
     if sys.platform=='win32':
         # try using drive name where windows is located
         dr = os.path.splitdrive(os.environ['WINDIR'])
-        LFpath  = Draw.Create(dr[0] + "\Lightflow")
-        TMPpath = Draw.Create(dr[0] + "\Lightflow\LFtemp")
-        Tpath   = Draw.Create(dr[0] + "\LFexport")
+        #TLFpath  = Draw.Create(dr[0] + "\Lightflow")
+        TLFpath  = Draw.Create(LFHOME)
+        #TMPpath  = Draw.Create(dr[0] + "\Lightflow\LFtemp")
+        TMPpath  = Draw.Create(LFTEMP)
+        Tpath    = Draw.Create(LFXPORT)
         Teditpath = Draw.Create('Notepad')
         # MATSpider directory
         Tmsp_path = Draw.Create(dr[0] + "\PROGRA~1\MATSpiderLF")
     else:
         #dr = os.path.join(os.environ['HOME']
         dr = os.environ['HOME']
-        LFpath  = Draw.Create(dr+ 'Lightflow')
+        TLFpath  = Draw.Create(dr+ 'Lightflow')
         TMPpath = Draw.Create(dr+ 'Lightflow/LFtemp')
         Tpath   = Draw.Create(dr+ 'LFexport')
         Teditpath = Draw.Create('emacs')
@@ -7915,22 +7934,24 @@ def SCRIPT_EXIT():
 
 # should have made everything a class from the start...
 def START():
-    global PATH_TITLE, PATH_OK, Tpath, LFXPORT, Teditpath, Tmsp_path, MSP_PATH, Ttex_dir, TEXROOT, Timsi_pref, Tpy_execpath
+    global PATH_TITLE, PATH_OK, sfilepath,Tpath,TLFpath,TMPpath, LFHOME,LFTEMP,LFXPORT,PYPATH, Teditpath, Tmsp_path, MSP_PATH, Ttex_dir, TEXROOT, Timsi_pref, Tpy_execpath
     global Tbrowser
 
+    try:
+        sfilepath = Blender.Get('datadir')
+        print "sfilepath",sfilepath
+    except:
+        print "\nNo settings path. Will try to configure."
     # test if the LIGHTFLOWPATH environment variable is available, if not, that's it, nothing more to do, goodbye...
     try:
-        sfilepath = os.environ['LIGHTFLOWPATH']
-        #sfilepath = LFHOME
+        LFHOME = os.environ['LIGHTFLOWPATH']
     except:
         #raise Exception("\nNo LIGHTFLOWPATH, it seems you did not install Lightflow properly, goodbye...")
-        print "\nNo settings path. Will try to configure."
-        sfilepath = Blender.Get('datadir')
-
+        print "\nNo Lightflow path. Will try to configure."
     # now do the same for PYTHONPATH, also must be available
     # but on the other hand, os probably isn't imported anyway when it is not available, but still...
     try:
-        os.environ['PYTHONPATH']
+        PYPATH = os.environ['PYTHONPATH']
         
     except:
         # of course can create the long string with C style separation, but looks ugly without the sudden lack
@@ -7938,18 +7959,19 @@ def START():
         #st = "\nNo PYTHONPATH, you did not set this environment variable.\nThis scipt really needs it...\n"
         #st += "So try again after you properly set this.\nFor a how-to see the GeneralInfo.html page."
         #raise Exception(st)
-        print "\nNo PYTHONPATH."
+        print "No PYTHONPATH. Trying Blender's."
+        PYPATH = os.path.abspath(os.path.join(Blender.Get('homedir'),os.pardir))
 
 
     # create full path name to settings file
-    sfilepath = os.path.join(sfilepath, LFE_paths_filename)
+    sfile = os.path.join(sfilepath, LFE_paths_filename)
 
     # Set all GUI vars to default
     SetDefaults()
 
     # now try to load the file which contains the LFexport path
     try:
-        pathsfile = open(sfilepath)
+        pathsfile = open(sfile)
     except IOError:
         # It did not work, start a simple GUI to allow user to input a path
         PATH_TITLE = "No path settings file !!!"
@@ -7962,25 +7984,29 @@ def START():
             pathsfile.close()
             paths = pathdata.splitlines()
             # for easier identification of old files, the first setting is now an ID
-            if int(paths[0])!=LFE_ID:
+            if paths[0]!=LFE_ID:
+                print "LFE_ID doesn't match"
                 raise ValueError
             # Main export path
-            Tpath = Draw.Create(paths[1])
-            LFpath = Draw.Create(paths[7])
-            TMPpath = Draw.Create(paths[8])
+            Tpath   = Draw.Create(paths[1])
+            TLFpath = Draw.Create(paths[2])
+            TMPpath = Draw.Create(paths[3])
             LFXPORT = paths[1]
+            LFHOME  = paths[2]
+            LFTEMP  = paths[3]
             # Editor name
-            Teditpath = Draw.Create(paths[2])
+            Teditpath = Draw.Create(paths[4])
             # MATSpider path name (windows)
-            Tmsp_path = Draw.Create(paths[3])
-            MSP_PATH = paths[3]
+            Tmsp_path = Draw.Create(paths[5])
+            MSP_PATH = paths[5]
             # Texture directory
-            Ttex_dir = Draw.Create(paths[4])
-            TEXROOT = paths[4]
+            Ttex_dir = Draw.Create(paths[6])
+            TEXROOT = paths[6]
             # Python path, totally forgotten about this in first release, really stupid...
-            Tpy_execpath = Draw.Create(paths[5])
+            Tpy_execpath = Draw.Create(paths[7])
+            PYPATH = paths[7]
             # linux only, browser pref.
-            if sys.platform!='win32': Tbrowser = Draw.Create(int(paths[6]))
+            if sys.platform!='win32': Tbrowser = Draw.Create(int(paths[8]))
         except:
             # Path file is an old one (incomplete), start path GUI to redefine
             PATH_TITLE = "Old or corrupt path file, need new information !"

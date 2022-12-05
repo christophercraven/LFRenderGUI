@@ -6426,6 +6426,7 @@ def getBGC():
     #avocado 0.25, 0.4, 0.4, 1
     #tomato  0.4, 0.25, 0.25, 1
     return BGL.glClearColor(0.25, 0.4, 0.4, 1)
+
 def rd_draw():
     global RENDER_STARTED, Tautodisp_toggle, Tautodisp_interv
     
@@ -6460,7 +6461,7 @@ def rd_draw():
     BGL.glColor3f(1,1,1)
     BGL.glRectf(wcrd[0]+ib*border, wcrd[1]-border, wcrd[2]+border, wcrd[3]-ib*border)
 
-    BGL.glColor3f(0,0,0)
+    BGL.glColor3f(1,0,0)
     apply(BGL.glRectf, wcrd)
 
     if TGA:
@@ -6481,6 +6482,8 @@ def rd_draw():
         BGL.glPixelZoom(aspr*a2, -aspr*a2)
         BGL.glPixelStorei(BGL.GL_UNPACK_ALIGNMENT, 1)   # important!!!, crash otherwise with odd width/height
         BGL.glDrawPixels(TGA[0], TGA[1], TGA[3], BGL.GL_UNSIGNED_BYTE, TGA[2])
+        # reset y-axis for Draw.text 
+        BGL.glPixelZoom(1, 1)
 
     if not Tanimation.val:  # single frame
         # Lightflow start button
@@ -6537,7 +6540,7 @@ def rd_draw():
         BGL.glColor3f(1,0,0)
     else:
         BGL.glColor3f(1, 1, 0)
-    BGL.glRasterPos2i(20*mulx, 40*muly)
+    BGL.glRasterPos2i(18*mulx, 40*muly)
     Draw.Text(REND_MSG)
 
     if not (RENDER_STARTED and Tautodisp_toggle.val) and not ANIM_STARTED:

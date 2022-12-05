@@ -5300,6 +5300,7 @@ def GetWindowFactors():
     # original 'design' window size w,h: 361, 398
     # later, needed more space: 393, 510
     # coord multiply values for any window size
+    #return max(1,int(wsize[2]*0.5)), max(1,int(wsize[2]/393.0)), max(1,int(wsize[3]/510.0))
     return max(1,int(wsize[2]*0.5)), max(1,int(wsize[2]/393.0)), max(1,int(wsize[3]/510.0))
 
 
@@ -5325,7 +5326,7 @@ def main_draw():
     midx, mulx, muly = GetWindowFactors()
     midx = int((393*mulx)/2)
     # clear screen
-    BGL.glClearColor(0.25, 0.5, 0.5, 1)
+    getBGC()
     BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
 
     # background title box
@@ -6421,11 +6422,15 @@ def LoadRawTGA():
 
 
 ###############################################################################################################################
-
+def getBGC():
+    #avocado 0.25, 0.4, 0.4, 1
+    #tomato  0.4, 0.25, 0.25, 1
+    return BGL.glClearColor(0.25, 0.4, 0.4, 1)
 def rd_draw():
     global RENDER_STARTED, Tautodisp_toggle, Tautodisp_interv
     
-    BGL.glClearColor(0.5, 0.25, 0.25, 1)
+    #BGL.glClearColor(0.5, 0.25, 0.25, 1)
+    getBGC()
     BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
 
     midx, mulx, muly = GetWindowFactors()
@@ -6436,7 +6441,8 @@ def rd_draw():
     else:
         st = "CURRENT RENDER"
     BGL.glColor3f(1, 1, 1)
-    BGL.glRasterPos2i(midx - len(st)*4, 490*muly)
+    #BGL.glRasterPos2i(midx - len(st)*4, 490*muly)
+    BGL.glRasterPos2i(5*mulx, 490*muly)
     Draw.Text(st)
 
     # render window, based on 380x285 (4:3), but changing window size
@@ -7062,7 +7068,7 @@ def pt_draw():
     global Tpath,TLFpath,TMPpath, Tsave_path, Teditpath, Tmsp_path, Ttex_dir, Tpy_execpath
     global Tbrowser
 
-    BGL.glClearColor(1, 1, 1, 1)
+    getBGC()
     BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
     
     mid, mulx, muly = GetWindowFactors()

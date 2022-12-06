@@ -5439,19 +5439,19 @@ def main_draw():
     # RENDER IMAGE SIZE SETTINGS
     BGL.glColor3f(0, 0, 0)
     BGL.glRasterPos2i(8*mulx, 193*muly)
-    Draw.Text("IMAGE SIZE:")
+    Draw.Text("SIZE:")
     st = 'RENDER IMAGE SIZE%t| 4:3 -> 640 X 480%x0|16:9 -> 640 X 360%x1|Custom%x2'
     # image settings not available in Publisher
     if BL_VERSION <= 223: st += '|FROM BLENDER%x3'
     Timsi_pref = Draw.Menu(st, evt_imgsize, 75*mulx, 190*muly, 130*mulx, 18*muly, Timsi_pref.val, "Render Image Size Settings")
 
     if Timsi_pref.val!=2:
-        st = "Image Size Percentage%t|10 % %x10|25 % %x25|50 % %x50|75 % %x75|100 % %x100|125 % %x125|150 % %x150|175 % %x175|200 % %x200"
+        st = "Image Size Percentage%t|10 % %x10|25 % %x25|50 % %x50|75 % %x75|100 % %x100|125 % %x125|150 % %x150|175 % %x175|200 % %x200" 
         Timsi_percent = Draw.Menu(st, evt_imgsize, 210*mulx, 190*muly, 60*mulx, 18*muly, Timsi_percent.val, "Image Size Percentage")
         # Display real size
         BGL.glColor3f(1, 1, 0)
         BGL.glRasterPos2i(275*mulx, 193*muly)
-        st = "-> %d X %d" % (Timsi_CustX.val, Timsi_CustY.val)
+        st = "== %d X %d" % (Timsi_CustX.val, Timsi_CustY.val)
         Draw.Text(st)
     else:
         Timsi_CustX = Draw.Number("X: ", evt_ignore, 210*mulx, 190*muly, 82*mulx, 18*muly, Timsi_CustX.val, 10, 4096, "X Resolution")
@@ -6006,6 +6006,7 @@ def main_bevent(evt):
             ds = Blender210.getDisplaySettings()
             Timsi_CustX.val = pf * ds.xResolution
             Timsi_CustY.val = pf * ds.yResolution
+        Blender.Redraw()
     elif evt == evt_TGredraw:
         Blender.Redraw()
 

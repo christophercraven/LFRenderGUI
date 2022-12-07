@@ -5288,7 +5288,7 @@ def ExportIt(selectedList=None):
     
     print
     sys.stdout.flush()
-
+    Blender.Redraw()
     return len(meshlist), len(arealist)+len(lamplist)
 
 

@@ -5326,8 +5326,7 @@ def main_draw():
     midx, mulx, muly = GetWindowFactors()
     midx = int((393*mulx)/2)
     # clear screen
-    getBGC()
-    BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
+    clear_screen()
 
     # background title box
     BGL.glColor3f(0, 0, 0)
@@ -6031,8 +6030,7 @@ def LY_draw():
     midx, mulx, muly = GetWindowFactors()
 
     # clear screen
-    BGL.glClearColor(0.5, 0.5, 0.5, 1)
-    BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
+    clear_screen()
 
     BGL.glColor3f(1,1,1)
     BGL.glRasterPos2i(10*mulx, 490*muly)
@@ -6115,8 +6113,7 @@ def mp_draw():
     global Trblur_samples
 
     # clear screen
-    BGL.glClearColor(0.5, 0.6, 0.5, 1)
-    BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
+    clear_screen()
     
     # get the window coordinate multiply factors
     midx, mulx, muly = GetWindowFactors()
@@ -6216,8 +6213,7 @@ def xtr_draw():
     global Tfilm_toggle, Tfilm_grain
 
     # clear screen
-    BGL.glClearColor(0.5, 0.5, 0.5, 1)
-    BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
+    clear_screen()
     
     # get the window coordinate multiply factors
     midx, mulx, muly = GetWindowFactors()
@@ -6423,17 +6419,17 @@ def LoadRawTGA():
 
 
 ###############################################################################################################################
-def getBGC():
-    #avocado 0.25, 0.4, 0.4, 1
+def clear_screen():
+    #turqouise 0.25, 0.5, 0.5, 1
     #tomato  0.4, 0.25, 0.25, 1
-    return BGL.glClearColor(0.25, 0.4, 0.4, 1)
+    BGL.glClearColor(0.25, 0.5, 0.5, 1)
+    BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
 
 def rd_draw():
     global RENDER_STARTED, Tautodisp_toggle, Tautodisp_interv
     
     #BGL.glClearColor(0.5, 0.25, 0.25, 1)
-    getBGC()
-    BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
+    clear_screen()
 
     midx, mulx, muly = GetWindowFactors()
 
@@ -6462,7 +6458,7 @@ def rd_draw():
     BGL.glColor3f(1,1,1)
     BGL.glRectf(wcrd[0]+ib*border, wcrd[1]-border, wcrd[2]+border, wcrd[3]-ib*border)
 
-    BGL.glColor3f(1,0,0)
+    BGL.glColor3f(0.5,0.25,0.25)
     apply(BGL.glRectf, wcrd)
 
     if TGA:
@@ -7074,8 +7070,7 @@ def pt_draw():
     global Tpath,TLFpath,TMPpath, Tsave_path, Teditpath, Tmsp_path, Ttex_dir, Tpy_execpath
     global Tbrowser
 
-    getBGC()
-    BGL.glClear(BGL.GL_COLOR_BUFFER_BIT)
+    clear_screen()
     
     mid, mulx, muly = GetWindowFactors()
     Lstart = 10*mulx

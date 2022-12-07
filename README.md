@@ -1,7 +1,7 @@
 # LFRenderGUI
 Blender exporter for Lightflow renderer
 
-Lightflow was an unusual renderer when it was first released over 20 years ago. I still like it. Because it was written for Blender's 2.2x series, I modified this exporter script to work with Blender 2.49, the last version to sport the vintage interface. This script comes with no technical support, warranty or guarantee.
+Lightflow was an unusual renderer when it was first released over 20 years ago. I still like it. Because this exporter script was written for Blender's 2.2x series, I modified it to work with Blender 2.49, the last version to sport the vintage interface. This script comes with no technical support, warranty or guarantee.
 
 Lightflow is offered free for non-commercial use at lightflowtech.com by Jacopo Pantaleoni.
 

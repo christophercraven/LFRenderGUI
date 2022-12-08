@@ -6455,11 +6455,19 @@ def rd_draw():
     BGL.glColor3f(0.5, 0.5, 0.5)
     BGL.glRectf(wcrd[0]-ib*border, wcrd[1]-border, wcrd[2]+border, wcrd[3]+ib*border)
 
-    BGL.glColor3f(1,1,1)
+    BGL.glColor3f(.66,.66,.66)
     BGL.glRectf(wcrd[0]+ib*border, wcrd[1]-border, wcrd[2]+border, wcrd[3]-ib*border)
 
-    BGL.glColor3f(0.5,0.25,0.25)
+    BGL.glColor3f(0.3,0.25,0.25)
     apply(BGL.glRectf, wcrd)
+    size = 20
+    xoff = wcrd[0]-(size/2)
+    yoff = wcrd[1]-(size/2)
+    for i in range(0,wsize[0]/size+1) :
+        for j in range(0,wsize[1]/size+1) :
+            if (i + j) %2 == 0:
+                BGL.glColor3f( 0.025, 0.025, 0.035);
+                BGL.glRectf(max(wcrd[0],i*size+xoff), max(wcrd[1],j*size+yoff), min(wcrd[2],(i+1)*size+xoff), min(wcrd[3],(j+1)*size+yoff))
 
     if TGA:
         # window aspect ratio to make it fit in window without distortion

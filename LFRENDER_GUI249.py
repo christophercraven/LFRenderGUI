@@ -5369,12 +5369,12 @@ def main_draw():
     if Tanimation.val==1: st += "|(ANIM) Export selected only%x2"
     Tautocheck  = Draw.Menu(st, evt_ignore, 175*mulx, 390*muly, 205*mulx, 18*muly, Tautocheck.val, "Mesh files")
 
-    Tradiosity  = Draw.Toggle("Radiosity: "+TGSTATE[Tradiosity.val], evt_TGredraw, 10*mulx, 370*muly, 70*mulx, 18*muly, Tradiosity.val,
+    Tradiosity  = Draw.Toggle("Radiosity: "+TGSTATE[Tradiosity.val], evt_TGredraw, 10*mulx, 370*muly, 80*mulx, 18*muly, Tradiosity.val,
                     "Enables/disables radiosity calculations")
-    Tcaustics   = Draw.Toggle("Caustics: "+TGSTATE[Tcaustics.val], evt_TGredraw, 80*mulx, 370*muly, 70*mulx, 18*muly, Tcaustics.val,
+    Tcaustics   = Draw.Toggle("Caustics: "+TGSTATE[Tcaustics.val], evt_TGredraw, 90*mulx, 370*muly, 80*mulx, 18*muly, Tcaustics.val,
                     "Enables/disables caustics calculations")
     Tanimation  = Draw.Menu("What to export?%t|Export this frame%x0|Export & Render entire anim%x1|Export single file anim%x2",
-                    evt_anim, 150*mulx, 370*muly, 230*mulx, 18*muly, Tanimation.val,
+                    evt_anim, 170*mulx, 370*muly, 210*mulx, 18*muly, Tanimation.val,
                     "What to export?")
 
     TWORLD_LIGHT    = Draw.Toggle("World Light: "+TGSTATE[TWORLD_LIGHT.val], evt_world, 10*mulx, 290*muly, 98*mulx, 78*muly, TWORLD_LIGHT.val,
